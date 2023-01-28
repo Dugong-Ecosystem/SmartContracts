@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-contract Dugong
+contract SeaGrass
 {
     address private _owner;
     address private _bridge;
