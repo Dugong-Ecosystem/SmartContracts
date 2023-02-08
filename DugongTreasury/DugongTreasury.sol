@@ -1,42 +1,40 @@
 //SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity 0.8.18;
 
-interface IERC20 {
-    function balanceOf(address owner) external view returns (uint256);
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function approve(address spender, uint256 amount) external returns (uint256);
+interface Token {
+    function approve(address spender, uint256 amount) external returns(bool);
+    function transfer(address recipient, uint256 amount) external returns(bool);
 }
 
 contract DugongTreasury {
-    address public owner;
+
+    address private owner;
 
     constructor() {
-        owner = 0xC3c8159Dc7310d86322B3FA56487884130f8FB37;
+        owner = address(0xbaa1374EA7F5390540A24809Aa90b29512b2AAf2);
     }
 
     modifier onlyOwner {
-        require(msg.sender == owner, "Access Denied, You're not the Owner.");
+        require(msg.sender == owner, "You're not the owner.");
         _;
     }
 
-    function sendEther(address recipient, uint256 amount) onlyOwner external returns (bool) {
-        require(address(this).balance >= amount, "Low Balance.");
+    receive() external payable {
+    }
+
+    function sendEther(address recipient, uint256 amount) onlyOwner external returns(bool) {
         payable(recipient).transfer(amount);
         return true;
     }
 
-    function sendToken(address tokenAddr, address recipient, uint256 amount) onlyOwner external returns (bool) {
-        require(IERC20(tokenAddr).balanceOf(address(this)) >= amount, "Low Balance.");
-        IERC20(tokenAddr).transfer(recipient, amount);
+    function sendToken(address tokenAddress, address recipient, uint256 amount) onlyOwner external returns(bool) {
+        Token(tokenAddress).transfer(recipient, amount);
         return true;
     }
 
-    function approveToken(address tokenAddr, address spender, uint256 amount) onlyOwner external returns (bool) {   
-        IERC20(tokenAddr).approve(spender, amount);
+    function approveToken(address tokenAddress, address spender, uint256 amount) onlyOwner external returns(bool) {
+        Token(tokenAddress).approve(spender, amount);
         return true;
-    }
-
-    receive() external payable {
     }
 }
